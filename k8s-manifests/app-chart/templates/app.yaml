@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Values.applicationName }}
+  namespace: {{ .Values.namespace }}
+spec:
+  project: default
+  source:
+    repoURL: {{ .Values.repoURL }}
+    targetRevision: {{ .Values.targetRevision }}
+    path: ./k8s-manifests/
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: {{ .Values.destinationNamespace }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
