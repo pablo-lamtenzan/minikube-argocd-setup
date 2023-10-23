@@ -41,6 +41,11 @@ source .env || { echo "Error: Failed to load .env file!"; exit 1; }
     exit 1
 }
 
+[ -n "$GITHUB_REPO_URL" ] || {
+    echo "Error: GITHUB_REPO_URL is not set in .env file."
+    exit 1
+}
+
 # Define default values for Kubernetes settings
 CLUSTER_NAME=${K8S_CLUSTER_NAME:-cluster-app}
 APP_NAMESPACE=${K8S_APP_NAMESPACE:-app}
@@ -130,7 +135,7 @@ else
     argocd login localhost:$ARGOCD_PORT --username admin --password $ARGOCD_PASSWORD
 fi
 
-argocd repo add ssh://git@github.com/pablo-lamtenzan/recruit-test-devops.git --ssh-private-key-path ./argocd-private-repo
+argocd repo add $GITHUB_REPO_URL --ssh-private-key-path ./argocd-private-repo
 
 bash << EOF & &>/dev/null
     while true ; do
