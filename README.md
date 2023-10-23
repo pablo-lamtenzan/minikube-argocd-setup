@@ -56,9 +56,6 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-buildx-
 
-    - name: Set Docker Image Tag
-      run: echo "DOCKER_IMAGE_TAG=${GITHUB_SHA::8}" >> $GITHUB_ENV
-
     - name: Login to DockerHub
       uses: docker/login-action@v3.0.0
       with:
