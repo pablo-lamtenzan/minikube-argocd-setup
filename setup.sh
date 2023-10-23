@@ -25,6 +25,15 @@ create_namespace() {
     fi
 }
 
+# Function to check if an environment variable is set
+check_environment() {
+    local env=${!1}
+    [ -n "$env" ] || {
+        echo "Error: $1 is not set in .env file."
+        exit 1
+    }
+}
+
 # Ensure required files and environment variables exist
 [ -f "./argocd-private-repo" ] || { echo "Error: SSH key for ArgoCD not found."; exit 1; }
 [ -f .env ] || { echo "Error: .env file not found!"; exit 1; }
@@ -36,15 +45,9 @@ source .env || { echo "Error: Failed to load .env file!"; exit 1; }
     exit 1
 }
 
-[ -n "$ARGOCD_PASSWORD" ] || {
-    echo "Error: ARGOCD_PASSWORD is not set in .env file."
-    exit 1
-}
-
-[ -n "$GITHUB_REPO_URL" ] || {
-    echo "Error: GITHUB_REPO_URL is not set in .env file."
-    exit 1
-}
+check_environment "ARGOCD_PASSWORD"
+check_environment "GITHUB_REPO_URL"
+check_environment "SERVICE_NAME"
 
 # Define default values for Kubernetes settings
 CLUSTER_NAME=${K8S_CLUSTER_NAME:-cluster-app}
@@ -139,7 +142,7 @@ argocd repo add $GITHUB_REPO_URL --ssh-private-key-path ./argocd-private-repo
 
 bash << EOF & &>/dev/null
     while true ; do
-        kubectl port-forward -n $APP_NAMESPACE svc/recruit $APP_PORT:8888 &>/dev/null
+        kubectl port-forward -n $APP_NAMESPACE svc/$SERVICE_NAME $APP_PORT:8888 &>/dev/null
         sleep 5
     done
 EOF
