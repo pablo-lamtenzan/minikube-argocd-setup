@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: {{ .Values.repoURL }}
     targetRevision: {{ .Values.targetRevision }}
-    path: ./k8s-manifests/
+    path: {{ .Values.manifestPath }}
   destination:
     server: https://kubernetes.default.svc
     namespace: {{ .Values.destinationNamespace }}
