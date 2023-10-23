@@ -8,7 +8,7 @@
 
 ### 1. Docker Hub Secrets
 
-To enable our **CI pipeline** to push images to Docker Hub, it is necesary to set up these two secrets: `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN`.
+To enable our **CI pipeline** to push images to Docker Hub, it is necesary to set up these two secrets: `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN` and `DOCKERHUB_REPO`.
 
 #### 1.1 Generate Docker Hub Token
 
@@ -26,6 +26,51 @@ To enable our **CI pipeline** to push images to Docker Hub, it is necesary to se
 1.2.3 Click on *"New repository secret"*.\
 1.2.4 Name the secret `DOCKERHUB_USERNAME` and set its value to your Docker Hub username.\
 1.2.5 Create another secret named `DOCKERHUB_TOKEN` and set its value to the token you generated in the previous step.
+1.2.6 Create another secret named `DOCKERHUB_REPO` and set to the Docker Hub repository name.
+
+This repository is designed to work with a Github Actions CI like this one:
+```yml
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2.10.0
+
+    - name: Cache Docker layers
+      uses: actions/cache@v3.3.2
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
+
+    - name: Set Docker Image Tag
+      run: echo "DOCKER_IMAGE_TAG=${GITHUB_SHA::8}" >> $GITHUB_ENV
+
+    - name: Login to DockerHub
+      uses: docker/login-action@v3.0.0
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Build and push Docker image
+      run: |
+        docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO }}:latest \
+          --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from=type=local,src=/tmp/.buildx-cache .
+        docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO }}:latest
+```
 
 ### 2. SSH Key for Private Repository Access
 
@@ -74,6 +119,7 @@ namespace: argocd-namespace
 destinationNamespace: your-destination-namespace
 repoURL: ssh://git@your-github-account/your-repo.git
 targetRevision: your-branch-or-commit
+manifestPath: path/to/your-repo-manifest.yml
 EOF
 ```
 
