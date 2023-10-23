@@ -91,7 +91,7 @@ This will generate two files in your current directory: *argo-access-key* (priva
 2.2.3 Click on *"Add deploy key"*.\
 2.2.4 Name it, paste the contents of `argo-access-key.pub` into the key field, and click on *"Add key"*.
 
-### 3 Configuration Files
+### 3. Configuration Files
 
 #### 3.1 .env File
 
@@ -108,7 +108,7 @@ K8S_ARGOCD_NAMESPACE=<your_argocd_namespace>  # Optional
 K8S_ARGOCD_PORT=<your_argocd_port>  # Optional
 ```
 
-### 4 values.yaml Configuration
+### 4. values.yaml Configuration
 
 To set up the necessary configurations for your deployment, you must create a `values.yaml` file inside the *k8s-manifests/app-chart/* directory. Use the following command:
 
