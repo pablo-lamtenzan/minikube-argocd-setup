@@ -101,6 +101,7 @@ Create a .env file in the root directory with the following format:
 DOCKER_USERNAME=<your_docker_username>
 DOCKER_PASSWORD=<your_docker_password>
 ARGOCD_PASSWORD=<your_argocd_password>
+GITHUB_REPO_URL=<your repository url>
 K8S_CLUSTER_NAME=<your_cluster_name>  # Optional
 K8S_APP_NAMESPACE=<your_app_namespace>  # Optional
 K8S_APP_PORT=<your_app_port>  # Optional
