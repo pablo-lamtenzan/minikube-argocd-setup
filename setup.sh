@@ -128,8 +128,6 @@ until netcat -zv localhost $ARGOCD_PORT 2>/dev/null; do
 done
 echo "ArgoCD port forwarding is ready."
 
-ISFIRST=true
-
 if [ "${1:-}" == "-f" ]; then
     ARGOCD_INITIAL_PASSWORD=$(kubectl -n $ARGOCD_NAMESPACE get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
     argocd login localhost:$ARGOCD_PORT --username admin --password $ARGOCD_INITIAL_PASSWORD
